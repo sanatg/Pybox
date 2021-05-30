@@ -4,17 +4,31 @@
 import dropbox
 import time
 import os
+from dropbox.files import WriteMode
+from asciimatics.effects import Cycle, Stars
+from asciimatics.renderers import FigletText
+from asciimatics.scene import Scene
+from asciimatics.screen import Screen
 class TransferData:
     def __init__(self, access_token):
         self.access_token = access_token
-
+    #upload function    
     def upload_file(self, file_from, file_to):
-        """upload a file to Dropbox using API v2
-        """
+
         dbx = dropbox.Dropbox(self.access_token)
 
-        f = open(file_from, 'rb')
-        dbx.files_upload(f.read(), file_to)
+        for root,dirs,files in os.walk(file_from):
+            for filename in files:
+                # construct the full local path
+                local_path = os.path.join(root,filename)
+
+                #full dropbox path
+                relative_path = os.path.relpath(local_path,file_from)
+                dropbox_path = os.path.join(file_to,relative_path)
+
+                with open(local_path, 'rb') as f:
+                    dbx.files_upload(f.read(), dropbox_path,mode=WriteMode('overwrite'))
+
 
 def main():
     #some theatrics
@@ -46,17 +60,34 @@ def main():
 
     """)
     #dropbox access token
-    access_token = 'qligWObuSOwAAAAAAAAAAXkx70AC3-CdZT3mxdOHJqjmUSBfxs23jZZamrBNBiBE'
+    access_token = ''
     transferData = TransferData(access_token)
 
-    file_from = input("Enter the file path to transfer : -")
+    file_from = str(input("Enter the file path to transfer : -"))
     file_to = input("enter the full path to upload to dropbox:- ")
+    print("Got it transfering data to dropbox")
+    print("Please Wait....")
     transferData.upload_file(file_from, file_to)
+    def demo(screen):
+        effects = [
+            Cycle(
+                screen,
+                FigletText("Hooray", font='big'),
+                int(screen.height / 2 - 8)),
+        Cycle(
+            screen,
+            FigletText("Uploaded!", font='big'),
+            int(screen.height / 2 + 3)),
+        Stars(screen, 200)
+    ]
+        screen.play([Scene(effects, 500)])
+
+    Screen.wrapper(demo)
     print("Transfer successfully!!")
+
 
     # The full path to upload the file to, including the file name
     
     # API v2
 
-if __name__ == '__main__':
-    main()
+main()

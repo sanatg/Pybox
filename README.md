@@ -11,7 +11,9 @@ Disclaimer: this project is not associated with dropbox in any way and is a indi
 ##About
 A python dropbox file uploader you can use it to take backups or just quickly uploading files this program is licensed under GPL license see the license tab for more info.
 
+There is an easter egg if you upload a file
 ## Usage and Installation
+    pip3 install asciimatics
     pip3 install dropbox
 
 Now go to https://dropbox.com/developers and generate a access token and change it on line 49:
